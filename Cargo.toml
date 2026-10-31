@@ -7,6 +7,7 @@ description = "Pure-Rust UBIFS/UBI image reader, builder and modifier (mkfs.ubif
 repository = "https://github.com/roman901/ubifs-rs"
 keywords = ["ubifs", "ubi", "mtd", "filesystem", "embedded"]
 categories = ["filesystem", "parser-implementations", "embedded"]
+exclude = [".github"]
 
 [features]
 default = ["zlib", "lzo"]
