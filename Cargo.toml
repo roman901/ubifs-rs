@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT"
 description = "Pure-Rust UBIFS/UBI image reader, builder and modifier (mkfs.ubifs-compatible)"
-repository = "https://github.com/librecapsula/ubifs"
+repository = "https://github.com/roman901/ubifs-rs"
 keywords = ["ubifs", "ubi", "mtd", "filesystem", "embedded"]
 categories = ["filesystem", "parser-implementations", "embedded"]
 
