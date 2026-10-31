@@ -28,7 +28,7 @@ pub enum Kind {
     Socket,
     /// A hard link to another node of the tree (the path of the first
     /// occurrence, relative to the root, e.g. `["usr", "bin", "tool"]`).
-    /// Only [`crate::walk::mkfs_plan`] resolves these; plain
+    /// Only [`crate::mkfs::mkfs_plan`] resolves these; plain
     /// [`crate::mkfs::mkfs`] rejects them.
     Hardlink {
         /// The tree path of the linked (first) occurrence.

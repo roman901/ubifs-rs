@@ -10,6 +10,10 @@
 //!   `extract_plan` → `mkfs_plan` (offline byte parity, no docker);
 //! * the UBI images parse with the volume table intact and their
 //!   static volume CRCs verify.
+//!
+//! The compressed-corpus tests open LZO- and ZLIB-compressed images
+//! and are only built when both `zlib` and `lzo` are enabled (the
+//! default and `--all-features` configurations).
 
 use std::collections::BTreeMap;
 use std::path::PathBuf;
@@ -220,6 +224,7 @@ const MKFS_IMAGES: &[&str] = &[
 ];
 
 #[test]
+#[cfg(all(feature = "zlib", feature = "lzo"))]
 fn official_images_extract_exactly_the_fixture_tree() {
     let spec = spec();
     for name in MKFS_IMAGES {
@@ -325,6 +330,7 @@ fn none_images_rebuild_byte_for_byte_offline() {
 }
 
 #[test]
+#[cfg(all(feature = "zlib", feature = "lzo"))]
 fn compressed_images_use_the_expected_codecs() {
     // Walk the raw leaves and collect the compression types seen in data
     // nodes: the official compressed corpus must exercise our decoders.
