@@ -961,12 +961,14 @@ mod tests {
     /// the index still points at the old offset, so the strict open
     /// refuses, while the rebuild loses exactly that node.
     fn excise(image: &mkfs::Image, leb_idx: usize, pos: usize, len: usize) -> Vec<Option<Vec<u8>>> {
+        // Remove the node together with its alignment filler (the next
+        // node must stay 8-aligned). `drain` shortens the LEB — the
+        // vacated tail is gone with it; an extra FF-fill here would
+        // corrupt the payload of the node that now ends at the tail.
         let end = (pos + len).div_ceil(8) * 8;
         let mut lebs = image.lebs.clone();
         let leb = lebs[leb_idx].as_mut().unwrap();
         leb.drain(pos..end);
-        let tail = leb.len() - (end - pos);
-        leb[tail..].fill(0xFF);
         lebs
     }
 
