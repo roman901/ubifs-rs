@@ -17,7 +17,10 @@ host project.
   `src/journal.rs` — log/bud/orphan parsing and replay inputs;
 - `src/ubi.rs` — EC/VID headers, volume table, dump parsing;
   `src/ubinize.rs` — the ubinize port (ini configs, image building);
-- `src/check.rs` — the fsck.ubifs-style checker (detection only).
+- `src/check.rs` — the fsck.ubifs-style checker (detection only);
+  `src/fsck.rs` — the repair: a port of the official `rebuild_fs`
+  (`fsck.ubifs -y -b`; scan without the index, vanilla salvage
+  semantics, returns a `walk::Plan` so hard links survive).
 
 ## Commands (from the repository root)
 

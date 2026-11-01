@@ -141,7 +141,9 @@ fn corruption_matrix() {
         Case {
             name: "master_lpt",
             expect: ProblemKind::LptCorrupted,
-            mode: 2,
+            // LPT_CORRUPTED has no NEED_REBUILD flag — the LPT is
+            // rebuilt in place, the safe mode handles it
+            mode: 0,
             make: Box::new(|l| patch(l, 1, 0, 120, &9999u32.to_le_bytes())),
         },
         Case {

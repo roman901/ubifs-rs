@@ -90,15 +90,22 @@ pub enum ProblemKind {
 impl ProblemKind {
     /// Which fsck.ubifs mode would repair this category: 0 — safe
     /// (`-a`), 1 — danger (`-y`), 2 — rebuild (`-y -b`). Detection-only
-    /// parity: this mirrors the `PROBLEM_*` flags of `problem.c`.
+    /// parity: this mirrors the `PROBLEM_*` flags of `problem.c` —
+    /// problems without `PROBLEM_DROP_DATA` are fixed by the safe mode,
+    /// `PROBLEM_DROP_DATA` needs danger, `PROBLEM_NEED_REBUILD` needs
+    /// the rebuild submode.
     pub fn fix_mode(self) -> u8 {
         match self {
-            ProblemKind::SbCorrupted => 3,  // unfixable, fsck refuses
-            ProblemKind::LptCorrupted => 2, // PROBLEM_NEED_REBUILD
+            ProblemKind::SbCorrupted => 3, // unfixable, fsck refuses
+            // PROBLEM_NEED_REBUILD
             ProblemKind::MstCorrupted
             | ProblemKind::LogCorrupted
             | ProblemKind::TncCorrupted
             | ProblemKind::EmptyTnc => 2,
+            // LPT_CORRUPTED carries no NEED_REBUILD flag — the LPT
+            // alone is rebuilt, in place.
+            ProblemKind::LptCorrupted => 0,
+            // PROBLEM_DROP_DATA without NEED_REBUILD
             ProblemKind::BudCorrupted
             | ProblemKind::OrphanCorrupted
             | ProblemKind::TncDataCorrupted
@@ -110,18 +117,22 @@ impl ProblemKind {
             | ProblemKind::FileHasTooManyDent
             | ProblemKind::XattrHasNoHost
             | ProblemKind::XattrHasWrongHost
-            | ProblemKind::FileIsDisconnected
             | ProblemKind::FileRootHasDent
             | ProblemKind::DentryIsUnreachable
-            | ProblemKind::RootDirNotFound => 1,
-            ProblemKind::LtabIncorrect
+            // dropping the file's data nodes
+            | ProblemKind::FileHasNoInode
+            | ProblemKind::FileShouldntHaveData
+            | ProblemKind::FileHasNoDent => 1,
+            // fixable without dropping data: the safe mode recovers
+            // these (disconnected files go to lost+found, the root is
+            // re-created, the counters corrected)
+            ProblemKind::FileIsDisconnected
+            | ProblemKind::RootDirNotFound
+            | ProblemKind::LtabIncorrect
             | ProblemKind::NnodeIncorrect
             | ProblemKind::PnodeIncorrect
             | ProblemKind::SpaceStatIncorrect
             | ProblemKind::IncorrectIdxSize
-            | ProblemKind::FileHasNoInode
-            | ProblemKind::FileShouldntHaveData
-            | ProblemKind::FileHasNoDent
             | ProblemKind::FileIsInconsistent => 0,
         }
     }

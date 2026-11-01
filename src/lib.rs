@@ -45,6 +45,7 @@ pub mod compress;
 pub mod crc;
 pub mod devtable;
 pub mod error;
+pub mod fsck;
 pub mod geometry;
 pub mod journal;
 pub mod key;

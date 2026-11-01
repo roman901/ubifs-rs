@@ -32,7 +32,7 @@ place.
 | Build UBI images (ini configs, dynamic/static volumes, alignment, autoresize/skip-check, image-seq) | ubinize | ✅ | **byte-identical** |
 | Parse UBI dumps (volume table, EC/VID, static CRCs, `ubinfo` view) | ubinfo | ✅ | — |
 | Consistency check (the fsck.ubifs problem table, detection + repair-mode classification) | fsck.ubifs | ✅ detection | semantics |
-| fsck repair (`-a/-y/-yb`, lost+found, rebuild) | fsck.ubifs | ❌ planned | — |
+| fsck repair — the `-y -b` rebuild (scan every main-area LEB without the index, no sqnum boundary: uncommitted bud tails are recovered; deletions via `nlink`-0/`inum`-0 markers; `parse_*` node validation; truncation nodes and stale-block dropping of `calculate_file_info`; holes become zeros — never a truncation, never a dropped file; hard links stay links; unreachable files are deleted like the official rebuild — no lost+found; a missing root creates an empty filesystem; no master needed) | fsck.ubifs | ✅ `fsck::rebuild` → `walk::Plan` (image-based) | semantics |
 | Encrypted (format 5) volumes | mount/fsck | ❌ refused explicitly | — |
 | Authenticated volumes | — (fsck refuses) | ❌ refused explicitly | — |
 
@@ -148,8 +148,10 @@ builders must keep the parity harnesses green:
 
 ## Limitations
 
-- fsck-style **repairs** (lost+found, rebuild) are not implemented —
-  the checker detects and classifies, it does not rewrite.
+- fsck repair is the rebuild submode only (`fsck::rebuild`): the
+  non-rebuild modes repair a live TNC in place and do not map onto
+  images. The lost+found flow belongs to those modes — the official
+  rebuild (and this port) deletes unreachable files instead.
 - Encrypted (format 5 / double-hash) volumes are refused with a clear
   error; reading them is planned.
 - The `zstd` feature links the C libzstd; everything else is pure Rust.
